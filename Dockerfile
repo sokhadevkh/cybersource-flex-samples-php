@@ -9,20 +9,17 @@ RUN apt-get update && apt-get install -y \
 # Enable Apache mod_rewrite
 RUN a2enmod rewrite
 
+# Set working directory to php-microform
 WORKDIR /var/www/html
 
-# Copy root project files (including ExternalConfiguration.php)
-COPY composer.json composer.lock ExternalConfiguration.php /var/www/html/
-COPY LICENSE README.md /var/www/html/
-
-# Copy php-microform sample into web root
+# Copy the entire php-microform folder into web root
 COPY php-microform/ /var/www/html/
 
 # Install Composer
 COPY --from=composer:2.7 /usr/bin/composer /usr/bin/composer
 ENV COMPOSER_ALLOW_SUPERUSER=1
 
-# Install PHP dependencies
+# Run composer install inside php-microform (now web root)
 RUN composer install --no-dev --optimize-autoloader --prefer-dist
 
 # Configure Apache
