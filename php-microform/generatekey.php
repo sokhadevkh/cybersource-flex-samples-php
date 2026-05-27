@@ -6,7 +6,7 @@
     $allowedCardNetworks = ["VISA", "MASTERCARD", "AMEX", "CARNET", "CARTESBANCAIRES", "CUP", "DINERSCLUB", "DISCOVER", "EFTPOS", "ELO", "JCB", "JCREW", "MADA", "MAESTRO", "MEEZA"];
 
     $requestObjArr = [
-            "targetOrigins" => ["http://localhost:8000"],
+            "targetOrigins" => ["https://cybersource-flex-samples-php.onrender.com"],
             "clientVersion" => "v2",
             "allowedCardNetworks" => $allowedCardNetworks,
             "allowedPaymentTypes" => ["CARD"]

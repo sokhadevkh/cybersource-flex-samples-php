@@ -14,6 +14,8 @@ WORKDIR /var/www/html
 
 # Copy the entire php-microform folder into web root
 COPY php-microform/ /var/www/html/
+COPY php-microform/.htaccess /var/www/html/.htaccess
+
 
 # Install Composer
 COPY --from=composer:2.7 /usr/bin/composer /usr/bin/composer
