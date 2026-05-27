@@ -16,6 +16,8 @@ WORKDIR /var/www/html
 
 # Copy project files
 COPY . .
+COPY php-microform/router.php /var/www/html/router.php
+
 
 # Install Composer
 COPY --from=composer:2.7 /usr/bin/composer /usr/bin/composer
