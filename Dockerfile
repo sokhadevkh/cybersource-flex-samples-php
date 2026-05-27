@@ -16,7 +16,7 @@ WORKDIR /var/www/html
 
 # Copy project files
 COPY . .
-COPY php-microform/router.php /var/www/html/router.php
+#COPY php-microform/router.php /var/www/html/router.php
 COPY php-microform/ /var/www/html/
 
 
