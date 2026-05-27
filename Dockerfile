@@ -22,6 +22,10 @@ ENV COMPOSER_ALLOW_SUPERUSER=1
 # Run composer install inside php-microform (now web root)
 RUN composer install --no-dev --optimize-autoloader --prefer-dist
 
+# Create Log directory with correct permissions
+RUN mkdir -p /var/www/Log && chown -R www-data:www-data /var/www/Log
+
+
 # Configure Apache
 RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf \
     && echo "DirectoryIndex router.php" >> /etc/apache2/apache2.conf
