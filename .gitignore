@@ -26,6 +26,8 @@
 !bin/console
 !bin/symfony_requirements
 /vendor/
+/php-microform/vendor
+/php-microform/Log
 
 # Assets and user uploads
 /web/bundles/
@@ -46,3 +48,6 @@
 
 # Embedded web-server pid file
 /.web-server-pid
+
+# Cybersources
+/php-microform/Resources
