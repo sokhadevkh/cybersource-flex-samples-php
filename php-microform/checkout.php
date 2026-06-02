@@ -88,7 +88,7 @@ include 'generatekey.php';
         <div class="modal-dialog">
           <div class="modal-content" style="width: 25rem; border-radius: 12px">
             <div class="modal-header">
-              <h5 class="modal-title" id="exampleModalLabel">Checkout</h5>
+              <h5 class="modal-title" id="exampleModalLabel">Credit / Debit Card</h5>
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -154,8 +154,7 @@ include 'generatekey.php';
             var form = document.querySelector('#my-sample-form');
             var payButton = document.querySelector('#pay-button');
             var flexResponse = document.querySelector('#flexresponse');
-            var expMonth = document.querySelector('#expMonth');
-            var expYear = document.querySelector('#expYear');
+            var expDate = document.querySelector('#expDate');
             var errorsOutput = document.querySelector('#errors-output');
           
             // the capture context that was requested server-side for this transaction
@@ -196,16 +195,19 @@ include 'generatekey.php';
               // setup
               var flex = new Flex(captureContext);
               var microform = flex.microform({ styles: myStyles });
-              var number = microform.createField('number', { placeholder: 'Enter card number' });
-              var securityCode = microform.createField('securityCode', { placeholder: '•••' });
+              var number = microform.createField('number', { placeholder: '0000 0000 0000 0000' });
+              var securityCode = microform.createField('securityCode', { placeholder: '000' });
 
               number.load('#number-container');
               securityCode.load('#securityCode-container');
 
               payButton.addEventListener('click', function() {  
+                var expArr = expDate.value?.split("/");
+                var expirationMonth = expArr[0];
+                var expirationYear = `20${expArr[1]}`;
                 var options = {    
-                  expirationMonth: expMonth.value,  
-                  expirationYear: expYear.value 
+                  expirationMonth: expirationMonth,  
+                  expirationYear: expirationYear 
                 };
 
                 microform.createToken(options, function (err, token) {
