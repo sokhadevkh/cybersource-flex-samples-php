@@ -73,7 +73,7 @@ include 'generatekey.php';
 
                 <div class="col-md-12 mt-4">
                   <!-- Button trigger modal -->
-                  <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                  <button id="checkout-btn" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#paymentModal">
                     Checkout
                   </button>
                 </div>
@@ -84,11 +84,11 @@ include 'generatekey.php';
 
     <div class="payment-form">
       <!-- Modal -->
-      <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal fade" id="paymentModal" tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true">
         <div class="modal-dialog">
           <div class="modal-content" style="width: 25rem; border-radius: 12px">
             <div class="modal-header">
-              <h5 class="modal-title" id="exampleModalLabel">Credit / Debit Card</h5>
+              <h5 class="modal-title" id="paymentModalLabel">Credit / Debit Card</h5>
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -149,82 +149,84 @@ include 'generatekey.php';
   </script>
 
   <script>
-            // JWK is set up on the server side route for /
-
-            var form = document.querySelector('#my-sample-form');
-            var payButton = document.querySelector('#pay-button');
-            var flexResponse = document.querySelector('#flexresponse');
-            var expDate = document.querySelector('#expDate');
-            var errorsOutput = document.querySelector('#errors-output');
-          
-            // the capture context that was requested server-side for this transaction
-            var captureContext = '<?php echo $captureContext; ?>' ;
-            var clientLibrary = '<?php echo $clientLibrary; ?>' ;
-            var clientLibraryIntegrity = '<?php echo $clientLibraryIntegrity; ?>' ;
-            console.log(captureContext);
-
-            const script = document.createElement('script');
-            script.type = 'text/javascript';
-            script.async = true;
-            script.onload = function() {
-              // Invoke the Flex SDK once the scripts are loaded asynchronously
-              flexSetup();
-            }
-            //url extracted from the JWT
-            script.src = clientLibrary;
-            //integrity extracted from the JWT
-            if (clientLibraryIntegrity) {
-              script.integrity = clientLibraryIntegrity;
-              script.crossOrigin = "anonymous";
-            }
-            document.head.appendChild(script);
-            // custom styles that will be applied to each field we create using Microform
-            var myStyles = {  
-              'input': {    
-                'font-size': '14px',    
-                'font-family': 'helvetica, tahoma, calibri, sans-serif',    
-                'color': '#555'  
-              },  
-              ':focus': { 'color': 'blue' },  
-              ':disabled': { 'cursor': 'not-allowed' },  
-              'valid': { 'color': '#3c763d' },  
-              'invalid': { 'color': '#a94442' }
-            };
-
-            function flexSetup() {
-              // setup
-              var flex = new Flex(captureContext);
-              var microform = flex.microform({ styles: myStyles });
-              var number = microform.createField('number', { placeholder: '0000 0000 0000 0000' });
-              var securityCode = microform.createField('securityCode', { placeholder: '000' });
-
-              number.load('#number-container');
-              securityCode.load('#securityCode-container');
-
-              payButton.addEventListener('click', function() {  
-                var expArr = expDate.value?.split("/");
-                var expirationMonth = expArr[0];
-                var expirationYear = `20${expArr[1]}`;
-                var options = {    
-                  expirationMonth: expirationMonth,  
-                  expirationYear: expirationYear 
-                };
-
-                microform.createToken(options, function (err, token) {
-                  if (err) {
-                    // handle error
-                    console.error(err);
-                    errorsOutput.textContent = err.message;
-                  } else {
-                    // At this point you may pass the token back to your server as you wish.
-                    // In this example we append a hidden input to the form and submit it.      
-                    console.log(JSON.stringify(token));
-                    flexResponse.value = JSON.stringify(token);
-                    form.submit();
-                  }
-                });
-              }); 
-            }
+            var checkoutBtn = document.querySelector('#checkout-btn');
+            checkoutBtn.addEventListener('click', function() {
+              // JWK is set up on the server side route for /
+              var form = document.querySelector('#my-sample-form');
+              var payButton = document.querySelector('#pay-button');
+              var flexResponse = document.querySelector('#flexresponse');
+              var expDate = document.querySelector('#expDate');
+              var errorsOutput = document.querySelector('#errors-output');
+            
+              // the capture context that was requested server-side for this transaction
+              var captureContext = '<?php echo $captureContext; ?>' ;
+              var clientLibrary = '<?php echo $clientLibrary; ?>' ;
+              var clientLibraryIntegrity = '<?php echo $clientLibraryIntegrity; ?>' ;
+              console.log(captureContext);
+  
+              const script = document.createElement('script');
+              script.type = 'text/javascript';
+              script.async = true;
+              script.onload = function() {
+                // Invoke the Flex SDK once the scripts are loaded asynchronously
+                flexSetup();
+              }
+              //url extracted from the JWT
+              script.src = clientLibrary;
+              //integrity extracted from the JWT
+              if (clientLibraryIntegrity) {
+                script.integrity = clientLibraryIntegrity;
+                script.crossOrigin = "anonymous";
+              }
+              document.head.appendChild(script);
+              // custom styles that will be applied to each field we create using Microform
+              var myStyles = {  
+                'input': {    
+                  'font-size': '14px',    
+                  'font-family': 'helvetica, tahoma, calibri, sans-serif',    
+                  'color': '#555'  
+                },  
+                ':focus': { 'color': 'blue' },  
+                ':disabled': { 'cursor': 'not-allowed' },  
+                'valid': { 'color': '#3c763d' },  
+                'invalid': { 'color': '#a94442' }
+              };
+  
+              function flexSetup() {
+                // setup
+                var flex = new Flex(captureContext);
+                var microform = flex.microform({ styles: myStyles });
+                var number = microform.createField('number', { placeholder: '0000 0000 0000 0000' });
+                var securityCode = microform.createField('securityCode', { placeholder: '000' });
+  
+                number.load('#number-container');
+                securityCode.load('#securityCode-container');
+  
+                payButton.addEventListener('click', function() {  
+                  var expArr = expDate.value?.split("/");
+                  var expirationMonth = expArr[0];
+                  var expirationYear = `20${expArr[1]}`;
+                  var options = {    
+                    expirationMonth: expirationMonth,  
+                    expirationYear: expirationYear 
+                  };
+  
+                  microform.createToken(options, function (err, token) {
+                    if (err) {
+                      // handle error
+                      console.error(err);
+                      errorsOutput.textContent = err.message;
+                    } else {
+                      // At this point you may pass the token back to your server as you wish.
+                      // In this example we append a hidden input to the form and submit it.      
+                      console.log(JSON.stringify(token));
+                      flexResponse.value = JSON.stringify(token);
+                      form.submit();
+                    }
+                  });
+                }); 
+              }
+            });
         </script>
     </body>
 </html>
