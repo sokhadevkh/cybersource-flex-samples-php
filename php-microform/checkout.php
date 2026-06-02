@@ -11,8 +11,10 @@ include 'generatekey.php';
         <title>Sample Checkout</title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
-
+        <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous"> -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.0.0/css/bootstrap.min.css" integrity="sha512-NZ19NrT58XPK5sXqXnnvtf9T5kLXSzGQlVZL9taZWeTBtXoN3xIfTdxbkQh6QSoJfJgpojRqMfhyqBAAEeiXcA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.0.0/js/bootstrap.min.js" integrity="sha512-Pv/SmxhkTB6tWGQWDa6gHgJpfBdIpyUy59QkbshS1948GRmj6WgZz18PaDMOqaEyKLRAvgil7sx/WACNGE4Txw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/cleave.js/1.6.0/cleave.min.js" integrity="sha512-KaIyHb30iXTXfGyI9cyKFUIRSSuekJt6/vqXtyQKhQP6ozZEGY8nOtRS6fExqE4+RbYHus2yGyYg1BrqxzV6YA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
         <style>
             #number-container, #securityCode-container {
                 height: 38px;
@@ -24,56 +26,127 @@ include 'generatekey.php';
                 outline: 0;
                 box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
             }
+            .fw-semibold {
+              font-weight: 600 !important;
+            }
         </style>
     </head>
 
-   <div class="container card">
-            <div class="card-body">
-                <h1>Checkout</h1>
-                <div id="errors-output" role="alert"></div>
-                <form action="token.php" id="my-sample-form" method="post">
-                    <div class="form-group">
-                        <label for="cardholderName">Name</label>
-                        <input id="cardholderName" class="form-control" name="cardholderName" placeholder="Name on the card">
-                        <label id="cardNumber-label">Card Number</label>
-                        <div id="number-container" class="form-control"></div>
-                        <label for="securityCode-container">Security Code</label>
-                        <div id="securityCode-container" class="form-control"></div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group col-md-6">
-                            <label for="expMonth">Expiry month</label>
-                            <select id="expMonth" class="form-control">
-                                <option>01</option>
-                                <option>02</option>
-                                <option>03</option>
-                                <option>04</option>
-                                <option>05</option>
-                                <option>06</option>
-                                <option>07</option>
-                                <option>08</option>
-                                <option>09</option>
-                                <option>10</option>
-                                <option>11</option>
-                                <option>12</option>
-                            </select>
-                        </div>
-                        <div class="form-group col-md-6">
-                            <label for="expYear">Expiry year</label>
-                            <select id="expYear" class="form-control">
-                                <option>2025</option>
-                                <option>2026</option>
-                                <option>2027</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <button type="button" id="pay-button" class="btn btn-primary">Pay</button>
-                    <input type="hidden" id="flexresponse" name="flexresponse">
-                </form>
+    <div class="container card">
+      <div class="card-body">
+        <div class="payment-summary mb-5 fw-semibold">
+          <h4 class="mb-3">Payment Summary</h4>
+          <div class="row g-3">
+            <div class="col-6 text-start">Sub Total</div>
+            <div class="col-6 text-end">$1.00</div>
+            <div class="col-12 m-0">
+              <hr class="mb-0">
             </div>
+            <div class="col-6 text-start">Total</div>
+            <div class="col-6 text-end">$1.00</div>
+          </div>
         </div>
+
+        <div class="billing-info">
+          <h4 class="mb-3">Billing Information</h4>
+            <form class="row g-3" method="post">
+                <div class="col-md-6">
+                    <label for="first_name" class="fw-semibold fs-6 mb-1">First Name</label>
+                    <input id="first_name" class="form-control" name="first_name" value="John">
+                </div>
+                <div class="col-md-6">
+                    <label for="last_name" class="fw-semibold fs-6 mb-1">Last Name</label>
+                    <input id="last_name" class="form-control" name="last_name" value="Doe">
+                </div>
+                <div class="col-md-12">
+                    <label for="address" class="fw-semibold fs-6 mb-1">Address</label>
+                    <input id="address" class="form-control" name="address" value="Las Vegas, NV 89169">
+                </div>
+                <div class="col-md-6">
+                    <label for="city" class="fw-semibold fs-6 mb-1">City</label>
+                    <input id="city" class="form-control" name="city" value="Las Vegas">
+                </div>
+                <div class="col-md-6">
+                    <label for="country" class="fw-semibold fs-6 mb-1">Country</label>
+                    <input id="country" class="form-control" name="country" value="US">
+                </div>
+
+                <div class="col-md-12 mt-4">
+                  <!-- Button trigger modal -->
+                  <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                    Checkout
+                  </button>
+                </div>
+            </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="payment-form">
+      <!-- Modal -->
+      <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content" style="width: 25rem; border-radius: 12px">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Checkout</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <div id="errors-output" role="alert"></div>
+                    <form action="token.php" id="my-sample-form" class="row g-3" method="post">
+                        <div class="col-md-12">
+                            <label for="cardholderName" class="fw-semibold fs-6 mb-1">Name</label>
+                            <input id="cardholderName" class="form-control" name="cardholderName" placeholder="Name on the card">
+                        </div>
+                        <div class="col-md-12">
+                            <label id="cardNumber-label" class="fw-semibold fs-6 mb-1">Card Number <span class="text-danger">*</span></label>
+                            <input id="number-container" class="form-control bg-transparent" readonly placeholder="0000 0000 0000 0000"></input>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="expDate" class="fw-semibold fs-6 mb-1">Expiry Date <span class="text-danger">*</span></label>
+                            <input id="expDate" class="form-control" placeholder="MM / YY"></input>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="securityCode-container" class="fw-semibold fs-6 mb-1">Security Code <span class="text-danger">*</span></label>
+                            <input id="securityCode-container" class="form-control bg-transparent" readonly placeholder="000"></input>
+                        </div>
+                        <div class="col-md-12 mt-4">
+                          <hr>
+                        </div>
+                        <div class="col-md-12 mt-0 fw-semibold d-flex justify-content-between">
+                          <div class="text-start">You're about to Pay:</div>
+                          <div class="text-end">$1.00</div>
+                        </div>
+                        <div class="col-md-12 mt-3">
+                          <input type="hidden" id="flexresponse" name="flexresponse">
+                          <button type="button" id="pay-button" form="myForm" class="btn btn-primary w-100">Pay</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+    // Set up Cleave inputs
+    new Cleave('#number-container', {
+        creditCard: true
+    });
+    new Cleave('#expDate', {
+        date: true,
+        datePattern: ['m', 'y'],
+        delimiter: '/',
+        blocks: [2, 2],
+        numericOnly: true,
+    });
+    new Cleave('#securityCode-container', {
+        numericOnly: true,
+        blocks: [3]
+    });
+  </script>
 
   <script>
             // JWK is set up on the server side route for /
