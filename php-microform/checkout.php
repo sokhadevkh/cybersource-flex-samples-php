@@ -1,37 +1,9 @@
 <?php
 //header("Content-Security-Policy: script-src 'self' 'unsafe-inline'; object-src 'none'; base-uri 'none'; require-trusted-types-for 'script';");
 include 'generatekey.php';
-
+include 'templates/header.php';
 ?>
 
-
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-      <title>Sample Checkout</title>
-      <meta charset="utf-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.0.2/css/bootstrap.min.css" integrity="sha512-usVBAd66/NpVNfBge19gws2j6JZinnca12rAe2l+d+QkLU9fiG02O1X8Q6hepIpr/EYKZvKx/I9WsnujJuOmBA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-      <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.0.2/js/bootstrap.min.js" integrity="sha512-a6ctI6w1kg3J4dSjknHj3aWLEbjitAXAjLDRUxo2wyYmDFRcz2RJuQr5M3Kt8O/TtUSp8n2rAyaXYy1sjoKmrQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/cleave.js/1.6.0/cleave.min.js" integrity="sha512-KaIyHb30iXTXfGyI9cyKFUIRSSuekJt6/vqXtyQKhQP6ozZEGY8nOtRS6fExqE4+RbYHus2yGyYg1BrqxzV6YA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-      <link rel="stylesheet" href="public/src/css/global.css"/>
-      <style>
-          #number-container, #securityCode-container {
-              height: 38px;
-          }
-
-          .flex-microform-focused {
-              background-color: #fff;
-              border-color: #80bdff;
-              outline: 0;
-              box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
-          }
-      </style>
-  </head>
-  <body>
-    <nav class="w-100 py-3 bg-primary mb-5" style="padding-left: 8rem">
-        <img width="150" src="public/src/images/aba-web-logo.png" alt="aba_logo">
-    </nav>
     <div class="container card">
       <div class="card-body row">
         <div class="col-8">
@@ -169,6 +141,9 @@ include 'generatekey.php';
       tabindex="-1"
       aria-labelledby="paymentModalLabel"
       aria-hidden="true"
+      data-bs-backdrop="static"
+      data-bs-keyboard="false"
+      style="overflow-y: hidden;"
     >
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content" style="width: 25rem; border-radius: 12px">
@@ -403,5 +378,7 @@ include 'generatekey.php';
         }
       };
     </script>
-  </body>
-</html>
+
+<?php
+include 'templates/footer.php';
+?>
