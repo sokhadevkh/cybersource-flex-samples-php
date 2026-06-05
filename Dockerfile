@@ -17,7 +17,7 @@ COPY php-microform/ /var/www/html/
 COPY php-microform/.htaccess /var/www/html/.htaccess
 
 # Create .env for 3DS notification
-RUN echo "https://cybersource-flex-samples-php.onrender.com/views/cres" > .env
+RUN echo "3DS_CALLBACK_URL=https://cybersource-flex-samples-php.onrender.com/views/cres" > .env
 
 # Install Composer
 COPY --from=composer:2.7 /usr/bin/composer /usr/bin/composer
