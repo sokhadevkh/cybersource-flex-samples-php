@@ -1,7 +1,7 @@
 <?php
 //header("Content-Security-Policy: script-src 'self' 'unsafe-inline'; object-src 'none'; base-uri 'none'; require-trusted-types-for 'script';");
-include 'generatekey.php';
-include 'templates/header.php';
+include '../generatekey.php';
+include '../templates/header.php';
 ?>
 
     <div class="container card">
@@ -87,7 +87,7 @@ include 'templates/header.php';
                     checked
                   />
                   <label for="payment_method" class="fs-6 mb-1">
-                    <img src="public/src/images/payment_sc.svg" alt="credit_cards">
+                    <img src="../public/src/images/payment_sc.svg" alt="credit_cards">
                     <span>Card Payment</span>
                   </label>
                 </div>
@@ -183,11 +183,11 @@ include 'templates/header.php';
                   ><span>Card Number <span class="text-danger">*</span></span>
                   <div class="position-relative">
                     <img
-                      src="public/src/images/payment_sc.svg"
+                      src="../public/src/images/payment_sc.svg"
                       alt="icon"
                     />
                     <span class="position-absolute end-0 me-3" style="top: 140%">
-                      <img id="card-detection" src="public/src/images/credit-card.svg" alt="card" style="width: 35px" />
+                      <img id="card-detection" src="../public/src/images/credit-card.svg" alt="card" style="width: 35px" />
                     </span>
                   </div>
                 </label>
@@ -214,7 +214,7 @@ include 'templates/header.php';
                   placeholder="***"
                 ></div>
                 <span class="position-absolute end-0 top-50 me-3"
-                  ><img src="public/src/images/cvv.svg" alt="CVV icon" />
+                  ><img src="../public/src/images/cvv.svg" alt="CVV icon" />
                 </span>
               </div>
               <div class="col-md-12 mt-4">
@@ -260,7 +260,7 @@ include 'templates/header.php';
         const year = d.getFullYear() % 100;
         if(expDate.value && expDate.value != "") {
           let expArr = expDate.value.split("/");
-          if(Number(expArr[0]) >= month && Number(expArr[1]) >= year) {
+          if(Number(expArr[1]) > year || (Number(expArr[1]) == year && Number(expArr[0]) >= month)) {
             expDate.classList.add('text-valid');
             expDate.classList.remove('text-invalid');
           } else {
@@ -366,19 +366,19 @@ include 'templates/header.php';
       function handleCheckCard(name) {
         const img = document.getElementById('card-detection');
         if (name === "visa") {
-          img.src = "public/src/images/visa.svg";
+          img.src = "../public/src/images/visa.svg";
         } else if (name === "mastercard") {
-          img.src = "public/src/images/master.svg";
+          img.src = "../public/src/images/master.svg";
         } else if (name === "cup" || name === "unionPay") {
-          img.src = "public/src/images/unionpay.svg";
+          img.src = "../public/src/images/unionpay.svg";
         } else if (name === "jcb" || formData?.txt_card_number?.startsWith("333")) {
-          img.src = "public/src/images/jcb.svg";
+          img.src = "../public/src/images/jcb.svg";
         } else {
-          img.src = "public/src/images/credit-card.svg";
+          img.src = "../public/src/images/credit-card.svg";
         }
       };
     </script>
 
 <?php
-include 'templates/footer.php';
+include '../templates/footer.php';
 ?>

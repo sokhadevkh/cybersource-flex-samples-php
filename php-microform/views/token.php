@@ -1,10 +1,10 @@
 <?php 
 $arrDump = json_decode($_POST["flexresponse"], true);
-include 'templates/header.php';
+include '../templates/header.php';
 ?>
 <div class="container card">
     <div class="card-body">
-            <form action="receipt.php" id="my-token-form" method="post">
+            <form action="payerauth.php" id="my-token-form" method="post">
             <h1>Token</h1>
             <table class="table">
                 <thead>
@@ -45,5 +45,5 @@ include 'templates/header.php';
 </script>
 
 <?php
-include 'templates/footer.php';
+include '../templates/footer.php';
 ?>

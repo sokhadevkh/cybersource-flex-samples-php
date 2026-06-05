@@ -51,3 +51,6 @@
 
 # Cybersources
 /php-microform/Resources
+/php-microform/.env
+/php-microform/temp
+/php-microform/storage
