@@ -3,7 +3,7 @@
     require_once __DIR__. DIRECTORY_SEPARATOR .'ExternalConfiguration.php';
 
 $apiResponse = '';
-$transientTokenJWK = $transientToken;
+$transientTokenJWK = $paymentInformation;
 
 	$clientReferenceInformationArr = [
 			"code" => "TC50171_3"
@@ -37,11 +37,6 @@ $transientTokenJWK = $transientToken;
 	];
 	$orderInformation = new CyberSource\Model\Ptsv2paymentsOrderInformation($orderInformationArr);
 
-	$tokenInformationArr = [
-			"transientTokenJwt" => "$transientTokenJWK"
-    ];
-	$tokenInformation = new CyberSource\Model\Ptsv2paymentsTokenInformation($tokenInformationArr);
-
 	$consumerAuthenticationInformationArr = [
 			"authenticationTransactionId" => $authTransId
 	];
@@ -50,8 +45,23 @@ $transientTokenJWK = $transientToken;
 			"clientReferenceInformation" => $clientReferenceInformation,
 			"orderInformation" => $orderInformation,
 			"consumerAuthenticationInformation" => $consumerAuthenticationInformationArr,
-			"tokenInformation" => $tokenInformation
 	];
+
+	if(is_array($paymentInformation) && isset($paymentInformation["number"])) {
+		$paymentInformationArr = [
+			"card" => $paymentInformation
+		];
+
+		$requestObjArr["paymentInformation"] = $paymentInformationArr;
+	} else {
+		$tokenInformationArr = [
+			"transientTokenJwt" => "$transientTokenJWK"
+		];
+		$tokenInformation = new CyberSource\Model\Ptsv2paymentsTokenInformation($tokenInformationArr);
+
+		$requestObjArr["tokenInformation"] = $tokenInformation;
+	}
+
 	$requestObj = new CyberSource\Model\ValidateRequest($requestObjArr);
 	
 	$commonElement = new CyberSource\ExternalConfiguration();

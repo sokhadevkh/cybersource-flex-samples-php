@@ -1,6 +1,6 @@
 <?php
 // save token into storage
-$transientToken = json_decode($_POST["flexresponse"], true);
+$paymentInformation = json_decode($_POST["flexresponse"], true);
 $sessionId = $_POST["sessionId"];
 include '../checkAuthentication.php';
 include '../templates/header.php';
@@ -55,15 +55,15 @@ if(isset($response["consumerAuthenticationInformation"]["accessToken"])) {
             </button>
             <form action="validateauth.php" id="my-cres-form" method="post" hidden>
                 <button type="button" id="validate-button" class="btn btn-secondary">Validate 3DS Result</button>
-                <input type="hidden" id="cres-flexresponse" name="flexresponse"">
+                <input type="hidden" id="cres-flexresponse" name="flexresponse">
             </form>
             <form action="receipt.php" id="my-frictionless-form" method="post" hidden>
                 <button type="button" id="frictionless-button" class="btn btn-primary">Pay (Frictionless)</button>
-                <input type="hidden" id="frictionless-flexresponse" name="flexresponse"">
+                <input type="hidden" id="frictionless-flexresponse" name="flexresponse">
             </form>
             <form action="receipt.php" id="my-payment-form" method="post">
                 <button type="button" id="pay-button" class="btn btn-primary">Pay (Non3DS)</button>
-                <input type="hidden" id="flexresponse" name="flexresponse"">
+                <input type="hidden" id="flexresponse" name="flexresponse">
             </form>
         </div>
     </div>
@@ -172,23 +172,20 @@ if(isset($response["consumerAuthenticationInformation"]["accessToken"])) {
     const formCres = document.querySelector('#my-cres-form');
 
     payButton.addEventListener('click', function() {
-        const token = '<?php echo $transientToken; ?>' ;
-        console.log(JSON.stringify(token));
-        flexResponse.value = JSON.stringify(token);
+        const token = '<?php echo json_encode($paymentInformation); ?>' ;
+        flexResponse.value = token;
         formPay.submit();
     });
 
     frictionlessButton.addEventListener('click', function() {
-        const token = '<?php echo $transientToken; ?>' ;
-        console.log(JSON.stringify(token));
-        FrictflexResponse.value = JSON.stringify(token);
+        const token = '<?php echo json_encode($paymentInformation); ?>' ;
+        FrictflexResponse.value = token;
         formPayFrictionless.submit();
     });
 
     validateButton.addEventListener('click', function() {
-        const token = '<?php echo $transientToken; ?>' ;
-        console.log(JSON.stringify(token));
-        CresflexResponse.value = JSON.stringify(token);
+        const token = '<?php echo json_encode($paymentInformation); ?>' ;
+        CresflexResponse.value = token;
         formCres.submit();
     });
 </script>

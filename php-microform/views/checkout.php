@@ -101,6 +101,7 @@ include '../templates/header.php';
                     id="flex_microform"
                     type="radio"
                     name="payment_type"
+                    value="flex_microform"
                     checked
                   />
                   <label for="flex_microform" class="fs-6 mb-1">
@@ -112,6 +113,7 @@ include '../templates/header.php';
                     id="rest_api"
                     type="radio"
                     name="payment_type"
+                    value="rest_api"
                   />
                   <label for="rest_api" class="fs-6 mb-1">
                     <span>RestAPI / DirectAPI Checkout</span>
@@ -160,7 +162,7 @@ include '../templates/header.php';
           </div>
           <div class="modal-body">
             <form
-              action="token.php"
+              action="cardcollection.php"
               id="my-sample-form"
               class="row g-3"
               method="post"
@@ -243,47 +245,25 @@ include '../templates/header.php';
       </div>
     </div>
     <script type="text/javascript">
-      // Set up Cleave inputs
-      new Cleave("#expDate", {
-        date: true,
-        datePattern: ["m", "y"],
-        delimiter: "/",
-        blocks: [2, 2],
-        numericOnly: true,
-      });
-
-      // Validate Expiry date
-      let expDate = document.querySelector("#expDate");
-      expDate.addEventListener("blur", function () {
-        const d = new Date();
-        const month = d.getMonth() + 1;
-        const year = d.getFullYear() % 100;
-        if(expDate.value && expDate.value != "") {
-          let expArr = expDate.value.split("/");
-          if(Number(expArr[1]) > year || (Number(expArr[1]) == year && Number(expArr[0]) >= month)) {
-            expDate.classList.add('text-valid');
-            expDate.classList.remove('text-invalid');
-          } else {
-      new Cleave("#securityCode-container", {
-        numericOnly: true,
-        blocks: [3],
-      });
-            expDate.classList.remove('text-valid');
-            expDate.classList.add('text-invalid');
-          }
-        }
-      })
-    </script>
-    <script type="text/javascript">
       var checkoutBtn = document.querySelector("#checkout-btn");
-      checkoutBtn.addEventListener("click", function () {
-        // JWK is set up on the server side route for /
-        var form = document.querySelector("#my-sample-form");
-        var payButton = document.querySelector("#pay-button");
-        var flexResponse = document.querySelector("#flexresponse");
-        var expDate = document.querySelector("#expDate");
-        var errorsOutput = document.querySelector("#errors-output");
+      var form = document.querySelector("#my-sample-form");
+      var payButton = document.querySelector("#pay-button");
+      var flexResponse = document.querySelector("#flexresponse");
+      var expDate = document.querySelector("#expDate");
+      var errorsOutput = document.querySelector("#errors-output");
 
+      checkoutBtn.addEventListener("click", function () {
+        var paymentType = document.querySelector('input[name="payment_type"]:checked');
+        setupFormModal(paymentType.value);
+        if(paymentType.value === "rest_api") {
+          loadRest();
+        } else {
+          setupFlex();
+        }
+      });
+      
+      // Setup Flex
+      function setupFlex() {
         // the capture context that was requested server-side for this transaction
         var captureContext = "<?php echo $captureContext; ?>";
         var clientLibrary = "<?php echo $clientLibrary; ?>";
@@ -295,7 +275,7 @@ include '../templates/header.php';
         script.async = true;
         script.onload = function () {
           // Invoke the Flex SDK once the scripts are loaded asynchronously
-          flexSetup();
+          loadFlex(captureContext);
         };
         //url extracted from the JWT
         script.src = clientLibrary;
@@ -305,6 +285,11 @@ include '../templates/header.php';
           script.crossOrigin = "anonymous";
         }
         document.head.appendChild(script);
+      }
+      // Load Flex form 
+      function loadFlex(captureContext) {
+        // setup
+        var flex = new Flex(captureContext);
         // custom styles that will be applied to each field we create using Microform
         var myStyles = {
           input: {
@@ -317,68 +302,170 @@ include '../templates/header.php';
           valid: { color: "#3c763d" },
           invalid: { color: "#a94442" },
         };
+        var microform = flex.microform({ styles: myStyles });
+        var number = microform.createField("number", {
+          placeholder: "0000 0000 0000 0000",
+        });
+        var securityCode = microform.createField("securityCode", {
+          placeholder: "***",
+        });
 
-        function flexSetup() {
-          // setup
-          var flex = new Flex(captureContext);
-          var microform = flex.microform({ styles: myStyles });
-          var number = microform.createField("number", {
-            placeholder: "0000 0000 0000 0000",
+        number.load("#number-container");
+        securityCode.load("#securityCode-container");
+
+        number.on("change", function (data) {
+          handleCheckCard(data.card[0]?.name);
+        });
+
+        payButton.addEventListener("click", function () {
+          var expArr = expDate.value?.split("/");
+          var expirationMonth = expArr[0];
+          var expirationYear = `20${expArr[1]}`;
+          var options = {
+            expirationMonth: expirationMonth,
+            expirationYear: expirationYear,
+          };
+
+          microform.createToken(options, function (err, token) {
+            if (err) {
+              // handle error
+              console.error(err);
+              errorsOutput.textContent = "* " + err.message;
+            } else {
+              // At this point you may pass the token back to your server as you wish.
+              // In this example we append a hidden input to the form and submit it.
+              console.log(JSON.stringify(token));
+              flexResponse.value = JSON.stringify(token);
+              form.submit();
+            }
           });
-          var securityCode = microform.createField("securityCode", {
-            placeholder: "***",
-          });
+        });
+      }
 
-          number.load("#number-container");
-          securityCode.load("#securityCode-container");
+      function loadRest() {
+        payButton.addEventListener("click", function () {
+          var cardNum = document.querySelector("#number-container");
+          var cardCVV = document.querySelector("#securityCode-container");
 
-          number.on("change", function (data) {
-            handleCheckCard(data.card[0]?.name);
-          });
-
-          payButton.addEventListener("click", function () {
-            var expArr = expDate.value?.split("/");
-            var expirationMonth = expArr[0];
-            var expirationYear = `20${expArr[1]}`;
-            var options = {
-              expirationMonth: expirationMonth,
-              expirationYear: expirationYear,
-            };
-
-            microform.createToken(options, function (err, token) {
-              if (err) {
-                // handle error
-                console.error(err);
-                errorsOutput.textContent = "* " + err.message;
-              } else {
-                // At this point you may pass the token back to your server as you wish.
-                // In this example we append a hidden input to the form and submit it.
-                console.log(JSON.stringify(token));
-                flexResponse.value = JSON.stringify(token);
-                form.submit();
-              }
-            });
-          });
-        }
-      });
+          var expArr = expDate.value?.split("/");
+          var expirationMonth = expArr[0];
+          var expirationYear = `20${expArr[1]}`;
+          var options = {
+            expirationMonth: expirationMonth,
+            expirationYear: expirationYear,
+          };
+          var cardCollection = {
+            number: cardNum.value,
+            expirationMonth: expirationMonth,
+            expirationYear: expirationYear,
+            securityCode: cardCVV.value
+          }
+          console.log(cardCollection);
+          flexResponse.value = JSON.stringify(cardCollection);
+          form.submit();
+        });
+      }
 
       /** Check Card Type */
-      function handleCheckCard(name) {
+      function handleCheckCard(type) {
         const img = document.getElementById('card-detection');
-        if (name === "visa") {
+        if (type === "visa") {
           img.src = "../public/src/images/visa.svg";
-        } else if (name === "mastercard") {
+        } else if (type === "mastercard") {
           img.src = "../public/src/images/master.svg";
-        } else if (name === "cup" || name === "unionPay") {
+        } else if (type === "cup" || type === "unionPay") {
           img.src = "../public/src/images/unionpay.svg";
-        } else if (name === "jcb" || formData?.txt_card_number?.startsWith("333")) {
+        } else if (type === "jcb") {
           img.src = "../public/src/images/jcb.svg";
         } else {
           img.src = "../public/src/images/credit-card.svg";
         }
       };
-    </script>
 
+      function setupFormModal(paymentType) {
+        if (paymentType === "rest_api") {
+          const divNum = document.getElementById('number-container');
+          const divCVV = document.getElementById('securityCode-container');
+          const inputNum = document.createElement('input');
+          const inputCVV = document.createElement('input');
+          inputNum.type = 'text';
+          inputNum.id = 'number-container';
+          inputNum.className = 'form-control bg-transparent';
+          inputNum.placeholder = '0000 0000 0000 0000';
+
+          inputCVV.type = 'text';
+          inputCVV.id = 'securityCode-container';
+          inputCVV.className = 'form-control bg-transparent';
+          inputCVV.placeholder = '***';
+
+          // Replace div with input
+          divNum.replaceWith(inputNum);
+          divCVV.replaceWith(inputCVV);
+          cleaveSetup();
+        } else {
+          const inputNum = document.getElementById('number-container');
+          const inputCVV = document.getElementById('securityCode-container');
+          const divNum = document.createElement('div');
+          const divCVV = document.createElement('div');
+          divNum.id = 'number-container';
+          divNum.className = 'form-control bg-transparent';
+          divNum.placeholder = '0000 0000 0000 0000';
+
+          divCVV.id = 'securityCode-container';
+          divCVV.className = 'form-control bg-transparent';
+          divCVV.placeholder = '***';
+
+          // Replace div with input
+          inputNum.replaceWith(divNum);
+          inputCVV.replaceWith(divCVV);
+        }
+      }
+
+      // Set up Cleave inputs
+      function cleaveSetup() {
+        new Cleave("#number-container", {
+          creditCard: true,
+          delimiter: ' ',
+          onCreditCardTypeChanged: function(type) {
+            console.log("Card Type: ", type);
+            handleCheckCard(type);
+          }
+        });
+        new Cleave("#securityCode-container", {
+          blocks: [3],
+          numericOnly: true,
+        });
+      }
+      
+      new Cleave("#expDate", {
+        date: true,
+        datePattern: ["m", "y"],
+        delimiter: "/",
+        blocks: [2, 2],
+        numericOnly: true,
+      });
+
+      // Validate Expiry date
+      expDate.addEventListener("blur", function () {
+        const d = new Date();
+        const month = d.getMonth() + 1;
+        const year = d.getFullYear() % 100;
+        if(expDate.value && expDate.value != "") {
+          let expArr = expDate.value.split("/");
+          if(Number(expArr[1]) > year || (Number(expArr[1]) == year && Number(expArr[0]) >= month)) {
+            expDate.classList.add('text-valid');
+            expDate.classList.remove('text-invalid');
+          } else {
+            new Cleave("#securityCode-container", {
+              numericOnly: true,
+              blocks: [3],
+            });
+            expDate.classList.remove('text-valid');
+            expDate.classList.add('text-invalid');
+          }
+        }
+      })
+    </script>
 <?php
 include '../templates/footer.php';
 ?>

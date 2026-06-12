@@ -1,7 +1,8 @@
 <?php
-$transientToken = json_decode($_POST["flexresponse"], true);
+$paymentInformation = json_decode($_POST["flexresponse"], true);
 $consumerAuth = json_decode($_POST["consumerAuth"] ?? null, true);
-include '../paymentWithFlexTransientToken.php';
+
+include '../paymentAuthorization.php';
 include '../templates/header.php';
 ?>
 <div class="container card">

@@ -1,5 +1,5 @@
 <?php
-$transientToken = json_decode($_POST["flexresponse"], true);
+$paymentInformation = json_decode($_POST["flexresponse"], true);
 include '../payerAuthentication.php';
 include '../templates/header.php';
 
@@ -114,10 +114,9 @@ if(isset($response["consumerAuthenticationInformation"]["accessToken"])) {
     const form = document.querySelector('#my-payerauth-form');
 
     payButton.addEventListener('click', function() {
-            const token = '<?php echo $transientToken; ?>' ;
+            const token = '<?php echo json_encode($paymentInformation); ?>' ;
             const referenceId = '<?php echo $referenceId; ?>' ;
-            console.log(JSON.stringify(token), referenceId);
-            flexResponse.value = JSON.stringify(token);
+            flexResponse.value = token;
             sessionId.value = referenceId;
             form.submit();
     });

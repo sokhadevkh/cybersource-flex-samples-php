@@ -7,7 +7,7 @@ $dotenv = \Dotenv\Dotenv::createImmutable(__DIR__);
 $dotenv->load();
 
 $apiResponse = '';
-$transientTokenJWK = $transientToken;
+$transientTokenJWK = $paymentInformation;
 $referenceId = $sessionId;
 
 	$clientReferenceInformationArr = [
@@ -42,11 +42,6 @@ $referenceId = $sessionId;
 	];
 	$orderInformation = new CyberSource\Model\Ptsv2paymentsOrderInformation($orderInformationArr);
 
-	$tokenInformationArr = [
-			"transientTokenJwt" => "$transientTokenJWK"
-    ];
-	$tokenInformation = new CyberSource\Model\Ptsv2paymentsTokenInformation($tokenInformationArr);
-
 	$consumerAuthenticationInformationArr = [
 			"deviceChannel" => "BROWSER",
 			"returnUrl" => $_ENV['3DS_CALLBACK_URL'],
@@ -58,8 +53,23 @@ $referenceId = $sessionId;
 			"clientReferenceInformation" => $clientReferenceInformation,
 			"orderInformation" => $orderInformation,
 			"consumerAuthenticationInformation" => $consumerAuthenticationInformationArr,
-			"tokenInformation" => $tokenInformation
 	];
+
+	if(is_array($paymentInformation) && isset($paymentInformation["number"])) {
+		$paymentInformationArr = [
+			"card" => $paymentInformation
+		];
+
+		$requestObjArr["paymentInformation"] = $paymentInformationArr;
+	} else {
+		$tokenInformationArr = [
+			"transientTokenJwt" => "$transientTokenJWK"
+		];
+		$tokenInformation = new CyberSource\Model\Ptsv2paymentsTokenInformation($tokenInformationArr);
+
+		$requestObjArr["tokenInformation"] = $tokenInformation;
+	}
+
 	$requestObj = new CyberSource\Model\CheckPayerAuthEnrollmentRequest($requestObjArr);
 
 

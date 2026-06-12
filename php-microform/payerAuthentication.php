@@ -3,23 +3,34 @@
     require_once __DIR__. DIRECTORY_SEPARATOR .'ExternalConfiguration.php';
 
 $apiResponse = '';
-$transientTokenJWK = $transientToken;
+$transientTokenJWK = $paymentInformation;
 
 	$clientReferenceInformationArr = [
 			"code" => "TC50171_3"
 	];
 	$clientReferenceInformation = new CyberSource\Model\Ptsv2paymentsClientReferenceInformation($clientReferenceInformationArr);
 
+	if(is_array($paymentInformation) && isset($paymentInformation["number"])) {
+		$paymentInformationArr = [
+			"card" => $paymentInformation
+		];
 
-	$tokenInformationArr = [
+		$requestObjArr = [
+				"clientReferenceInformation" => $clientReferenceInformation,
+				"paymentInformation" => $paymentInformationArr
+		];
+	} else {
+		$tokenInformationArr = [
 			"transientTokenJwt" => "$transientTokenJWK"
-    ];
-	$tokenInformation = new CyberSource\Model\Ptsv2paymentsTokenInformation($tokenInformationArr);
+		];
+		$tokenInformation = new CyberSource\Model\Ptsv2paymentsTokenInformation($tokenInformationArr);
 
-	$requestObjArr = [
-			"clientReferenceInformation" => $clientReferenceInformation,
-			"tokenInformation" => $tokenInformation
-	];
+		$requestObjArr = [
+				"clientReferenceInformation" => $clientReferenceInformation,
+				"tokenInformation" => $tokenInformation
+		];
+	}
+
 	$requestObj = new CyberSource\Model\PayerAuthSetupRequest($requestObjArr);
 
 
@@ -37,7 +48,7 @@ $transientTokenJWK = $transientToken;
 
 
 	} catch (Cybersource\ApiException $e) {
-		print_r("<div class='text-danger position-absolute p-3 bg-white' style='top:90%; left:50%'>Transien token expired.</div>");
+		// print_r("<div class='text-danger position-absolute p-3 bg-white' style='top:90%; left:50%'>Transien token expired.</div>");
 		// print_r($e->getResponseBody());
 		// print_r($e->getMessage());
 	}

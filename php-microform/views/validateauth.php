@@ -1,5 +1,5 @@
 <?php
-$transientToken = json_decode($_POST["flexresponse"], true);
+$paymentInformation = json_decode($_POST["flexresponse"], true);
 
 // Get auth transaction id from 3DS result
 $file = '../storage/authTransId.txt';
@@ -75,10 +75,9 @@ if(isset($response["consumerAuthenticationInformation"])) {
     }
 
     payButton.addEventListener('click', function() {
-            const token = '<?php echo $transientToken; ?>' ;
+            const token = '<?php echo json_encode($paymentInformation); ?>' ;
             const consumerAuthData = '<?php echo json_encode($consumerAuth, true); ?>' ;
-            console.log(JSON.stringify(token), consumerAuthData);
-            flexResponse.value = JSON.stringify(token);
+            flexResponse.value = token;
             consumerAuth.value = consumerAuthData;
             form.submit();
     });

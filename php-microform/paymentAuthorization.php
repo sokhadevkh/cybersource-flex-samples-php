@@ -3,7 +3,8 @@
     require_once __DIR__. DIRECTORY_SEPARATOR .'ExternalConfiguration.php';
 
 $apiResponse = '';
-$transientTokenJWK = $transientToken;
+$apiResponse = '';
+$transientTokenJWK = $paymentInformation;
 $consumerAuthJWK = $consumerAuth;
 
 	$clientReferenceInformationArr = [
@@ -38,16 +39,25 @@ $consumerAuthJWK = $consumerAuth;
 	];
 	$orderInformation = new CyberSource\Model\Ptsv2paymentsOrderInformation($orderInformationArr);
 
-	$tokenInformationArr = [
-			"transientTokenJwt" => "$transientTokenJWK"
-    ];
-	$tokenInformation = new CyberSource\Model\Ptsv2paymentsTokenInformation($tokenInformationArr);
-
 	$requestObjArr = [
 			"clientReferenceInformation" => $clientReferenceInformation,
 			"orderInformation" => $orderInformation,
-			"tokenInformation" => $tokenInformation
 	];
+
+	if(is_array($paymentInformation) && isset($paymentInformation["number"])) {
+		$paymentInformationArr = [
+			"card" => $paymentInformation
+		];
+
+		$requestObjArr["paymentInformation"] = $paymentInformationArr;
+	} else {
+		$tokenInformationArr = [
+			"transientTokenJwt" => "$transientTokenJWK"
+		];
+		$tokenInformation = new CyberSource\Model\Ptsv2paymentsTokenInformation($tokenInformationArr);
+
+		$requestObjArr["tokenInformation"] = $tokenInformation;
+	}
 
 	if(isset($consumerAuthJWK)) {
 		$requestObjArr["consumerAuthenticationInformation"] = $consumerAuthJWK;
