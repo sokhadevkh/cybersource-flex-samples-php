@@ -10,6 +10,13 @@ if($apiResponse) {
     $response = json_decode($apiResponse[0], true);
 }
 
+if ($paymentInformation) {
+    if (!is_dir('../storage')) {
+        mkdir('../storage', 0777, true); // true = recursive
+    }
+    file_put_contents('../storage/paymentInformation.txt', json_encode($paymentInformation), FILE_APPEND | LOCK_EX);
+}
+
 $stepUpUrl = "";
 $accessToken = "";
 $paresStatus = "";
@@ -53,10 +60,6 @@ if(isset($response["consumerAuthenticationInformation"]["accessToken"])) {
                 data-bs-target="#paymentModal">
                 Manually Render 3DS
             </button>
-            <form action="validateauth.php" id="my-cres-form" method="post" hidden>
-                <button type="button" id="validate-button" class="btn btn-secondary">Validate 3DS Result</button>
-                <input type="hidden" id="cres-flexresponse" name="flexresponse">
-            </form>
             <form action="receipt.php" id="my-frictionless-form" method="post" hidden>
                 <button type="button" id="frictionless-button" class="btn btn-primary">Pay (Frictionless)</button>
                 <input type="hidden" id="frictionless-flexresponse" name="flexresponse">
@@ -80,7 +83,7 @@ if(isset($response["consumerAuthenticationInformation"]["accessToken"])) {
     style="overflow-y: hidden;"
 >
     <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content" style="width: 32rem; border-radius: 12px">
+    <div class="modal-content" style="width: 35rem; border-radius: 12px">
         <div class="modal-body p-0">
             <div class="text-end w-100 px-3 pt-3">
                 <button
@@ -94,7 +97,7 @@ if(isset($response["consumerAuthenticationInformation"]["accessToken"])) {
                 id="threeDSFrame"
                 title="3DS Authentication Frame"
                 width="100%"
-                height="720"
+                height="800"
                 style="border: none"
             ></iframe>
         </div>
@@ -118,9 +121,7 @@ if(isset($response["consumerAuthenticationInformation"]["accessToken"])) {
             formPayFrictionless.removeAttribute("hidden");
         } else if(paresStatus == "C") {
             const render3DS = document.querySelector("#render-3ds-button");
-            const validateForm = document.querySelector("#my-cres-form");
             render3DS.removeAttribute("hidden");
-            validateForm.removeAttribute("hidden");
             handleProcess3DS();
         }
     }
@@ -160,16 +161,13 @@ if(isset($response["consumerAuthenticationInformation"]["accessToken"])) {
 </script>
 <script>
     const payButton = document.querySelector('#pay-button');
-    const validateButton = document.querySelector('#validate-button');
     const frictionlessButton = document.querySelector('#frictionless-button');
 
     const flexResponse = document.querySelector('#flexresponse');
-    const CresflexResponse = document.querySelector('#cres-flexresponse');
     const FrictflexResponse = document.querySelector('#frictionless-flexresponse');
 
     const formPay = document.querySelector('#my-payment-form');
     const formPayFrictionless = document.querySelector('#my-frictionless-form');
-    const formCres = document.querySelector('#my-cres-form');
 
     payButton.addEventListener('click', function() {
         const token = '<?php echo json_encode($paymentInformation); ?>' ;
@@ -181,12 +179,6 @@ if(isset($response["consumerAuthenticationInformation"]["accessToken"])) {
         const token = '<?php echo json_encode($paymentInformation); ?>' ;
         FrictflexResponse.value = token;
         formPayFrictionless.submit();
-    });
-
-    validateButton.addEventListener('click', function() {
-        const token = '<?php echo json_encode($paymentInformation); ?>' ;
-        CresflexResponse.value = token;
-        formCres.submit();
     });
 </script>
 <?php

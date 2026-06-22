@@ -44,7 +44,7 @@ if(isset($response["consumerAuthenticationInformation"]["accessToken"])) {
             </table>
             
             
-            <button type="button" id="pay-button" class="btn btn-primary" hidden>Load 3DS Authentication</button>
+            <button type="button" id="pay-button" class="btn btn-primary" hidden>Check 3DS Authentication</button>
             <input type="hidden" id="flexresponse" name="flexresponse">
             <input type="hidden" id="sessionId" name="sessionId">
         </form>

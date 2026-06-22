@@ -1,16 +1,20 @@
 <?php
-$paymentInformation = json_decode($_POST["flexresponse"], true);
-
 // Get auth transaction id from 3DS result
-$file = '../storage/authTransId.txt';
-$authTransId = file_get_contents($file);
+$files = [
+    "paymentInformation" => '../storage/paymentInformation.txt',
+    "authId" => '../storage/authTransId.txt'
+];
+$paymentInformation = file_get_contents($files['paymentInformation']);
+$paymentInformation = json_decode($paymentInformation, true);
+$authTransId = file_get_contents($files['authId']);
 // remove file
-if (file_exists($file)) {
-    unlink($file);
+foreach ($files as $file) {
+    if (file_exists($file)) {
+        unlink($file);
+    }
 }
 
 include '../validateAuthentication.php';
-include '../templates/header.php';
 
 $response = "";
 if($apiResponse) {
@@ -33,45 +37,30 @@ if(isset($response["consumerAuthenticationInformation"])) {
     ];
 }
 ?>
-<div class="container card">
-    <div class="card-body">
-        <form action="receipt.php" id="my-payerauth-form" method="post">
-            <h1>Payer Authentication Setup</h1>
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th scope="col">Key</th>
-                        <th scope="col">value</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr scope="row">
-                        <td>API Response</td>
-                        <td style="max-width: 200px">
-                            <pre><?php echo $apiResponse[0]; ?></pre>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-            
-            
-            <button type="button" id="pay-button" class="btn btn-primary" hidden>Pay with Transient Token</button>
-            <input type="hidden" id="flexresponse" name="flexresponse">
-            <input type="hidden" id="consumerAuth" name="consumerAuth">
-        </form>
+        <tr scope="row">
+            <td style="width: 90px">Validate Auth Response</td>
+            <td style="max-width: 200px">
+                <pre><?php echo $apiResponse[0]; ?></pre>
+            </td>
+        </tr>
+    </tbody>
+</table>
+<form action="receipt.php" id="my-payerauth-form" method="post" target="_top">
+    <div class="w-100 d-flex justify-content-center">
+        <button type="button" id="pay-button" class="btn btn-primary" disabled>Complete Payment</button>
     </div>
-</div>
+    <input type="hidden" id="flexresponse" name="flexresponse">
+    <input type="hidden" id="consumerAuth" name="consumerAuth">
+</form>
 <script>
     const payButton = document.querySelector('#pay-button');
     const flexResponse = document.querySelector('#flexresponse');
     const consumerAuth = document.querySelector('#consumerAuth');
     const form = document.querySelector('#my-payerauth-form');
 
-    window.onload = () => {
-        const paresStatus = '<?php echo $paresStatus; ?>';
-        if(paresStatus == "Y") {
-            payButton.removeAttribute("hidden");
-        }
+    const paresStatus = '<?php echo $paresStatus; ?>';
+    if(paresStatus == "Y") {
+        payButton.removeAttribute("disabled");
     }
 
     payButton.addEventListener('click', function() {

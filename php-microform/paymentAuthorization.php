@@ -60,7 +60,9 @@ $consumerAuthJWK = $consumerAuth;
 	}
 
 	if(isset($consumerAuthJWK)) {
-		$requestObjArr["consumerAuthenticationInformation"] = $consumerAuthJWK;
+		$requestObjArr["consumerAuthenticationInformation"] = [
+			"authenticationTransactionId" => $consumerAuthJWK["authenticationTransactionId"]
+		];
 	}
 	$requestObj = new CyberSource\Model\CreatePaymentRequest($requestObjArr);
 

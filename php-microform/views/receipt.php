@@ -2,6 +2,17 @@
 $paymentInformation = json_decode($_POST["flexresponse"], true);
 $consumerAuth = json_decode($_POST["consumerAuth"] ?? null, true);
 
+$files = [
+    "paymentInformation" => '../storage/paymentInformation.txt',
+    "authId" => '../storage/authTransId.txt'
+];
+// remove file
+foreach ($files as $file) {
+    if (file_exists($file)) {
+        unlink($file);
+    }
+}
+
 include '../paymentAuthorization.php';
 include '../templates/header.php';
 ?>

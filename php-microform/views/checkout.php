@@ -230,14 +230,13 @@ include '../templates/header.php';
               </div>
               <div class="col-md-12 mt-3">
                 <input type="hidden" id="flexresponse" name="flexresponse" />
-                <button
-                  type="button"
+                <input
+                  type="submit"
                   id="pay-button"
                   form="myForm"
                   class="btn btn-primary w-100"
-                >
-                  Pay
-                </button>
+                  value="Pay"
+                />
               </div>
             </form>
           </div>
@@ -251,6 +250,7 @@ include '../templates/header.php';
       var flexResponse = document.querySelector("#flexresponse");
       var expDate = document.querySelector("#expDate");
       var errorsOutput = document.querySelector("#errors-output");
+      let cardType = "";
 
       checkoutBtn.addEventListener("click", function () {
         var paymentType = document.querySelector('input[name="payment_type"]:checked');
@@ -343,10 +343,12 @@ include '../templates/header.php';
       }
 
       function loadRest() {
+        var cardNum = document.querySelector("#number-container");
+        var cardCVV = document.querySelector("#securityCode-container");
+        // Payment form event
+        validateFormEvent(cardNum, cardCVV);
+        
         payButton.addEventListener("click", function () {
-          var cardNum = document.querySelector("#number-container");
-          var cardCVV = document.querySelector("#securityCode-container");
-
           var expArr = expDate.value?.split("/");
           var expirationMonth = expArr[0];
           var expirationYear = `20${expArr[1]}`;
@@ -360,9 +362,11 @@ include '../templates/header.php';
             expirationYear: expirationYear,
             securityCode: cardCVV.value
           }
-          console.log(cardCollection);
           flexResponse.value = JSON.stringify(cardCollection);
-          form.submit();
+          var valid = validateForm(cardNum, cardCVV, expDate);
+          if(valid) {
+            form.submit();
+          }
         });
       }
 
@@ -392,11 +396,13 @@ include '../templates/header.php';
           inputNum.id = 'number-container';
           inputNum.className = 'form-control bg-transparent';
           inputNum.placeholder = '0000 0000 0000 0000';
+          inputNum.setAttribute("required", "true");
 
           inputCVV.type = 'text';
           inputCVV.id = 'securityCode-container';
           inputCVV.className = 'form-control bg-transparent';
           inputCVV.placeholder = '***';
+          inputCVV.setAttribute("required", "true");
 
           // Replace div with input
           divNum.replaceWith(inputNum);
@@ -435,6 +441,34 @@ include '../templates/header.php';
           blocks: [3],
           numericOnly: true,
         });
+      }
+
+      function validateFormEvent(cardNum, cardCVV) {
+        cardNum.addEventListener("blur", function () {
+          if(cardNum.value?.replace(/\s+/g, "")?.length === 16) {
+            cardNum.classList.add('text-valid');
+            cardNum.classList.remove('text-invalid');
+          } else {
+            cardNum.classList.remove('text-valid');
+            cardNum.classList.add('text-invalid');
+          }
+        });
+        cardCVV.addEventListener("blur", function () {
+          if(cardCVV.value?.length === 3) {
+            cardCVV.classList.add('text-valid');
+            cardCVV.classList.remove('text-invalid');
+          } else {
+            cardCVV.classList.remove('text-valid');
+            cardCVV.classList.add('text-invalid');
+          }
+        });
+      }
+
+      function validateForm(cardNum, cardCVV, expDate) {
+        if(cardNum.classList.contains("text-valid") && cardCVV.classList.contains("text-valid") && expDate.classList.contains("text-valid")) {
+          return true;
+        }
+        return false;
       }
       
       new Cleave("#expDate", {

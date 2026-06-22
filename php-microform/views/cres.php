@@ -35,8 +35,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <pre><?php echo json_encode($data, JSON_PRETTY_PRINT); ?></pre>
                 </td>
             </tr>
-        </tbody>
-    </table>
+            <?php
+                include 'validateauth.php';
+            ?>
 <?php
 include '../templates/footer.php';
 ?>

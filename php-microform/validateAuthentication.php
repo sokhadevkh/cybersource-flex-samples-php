@@ -75,12 +75,9 @@ $transientTokenJWK = $paymentInformation;
 		$apiResponse = $api_instance->validateAuthenticationResults($requestObj);
 		//print_r(PHP_EOL);
 		//print_r($apiResponse);
-
-
 	} catch (Cybersource\ApiException $e) {
 		print_r("<div class='text-danger position-absolute p-3 bg-white' style='top:90%; left:50%'>Transien token expired.</div>");
 		// print_r($e->getResponseBody());
 		// print_r($e->getMessage());
 	}
-
 ?>
